@@ -13,18 +13,18 @@ void server_handler(int socketFD){
     ssize_t readBytes,writeBytes;
     char TempBuff[1000];
     do{
-        bzero(readBuffer,sizeof(readBuff));//Empth the read buffer
+        bzero(readBuff,sizeof(readBuff));//Empth the read buffer
         bzero(writeBuff,sizeof(writeBuff));
-        readBytes=read(sockFD,readBuff,sizeof(readBuff));
+        readBytes=read(socketFD,readBuff,sizeof(readBuff));
         if(readBytes==-1){
             perror("Error while reading from server!\n");
         }
         else if(readBytes==0){
-            printf("Closing the connection now.\n")
+            printf("Closing the connection now.\n");
         }
         else if(strchr(readBuff,'^')!=NULL){
             //skip read from client
-            strcpy(TempBuff,readBuff,strlen(readBuff)-1);
+            strncpy(TempBuff,readBuff,strlen(readBuff)-1);
             printf("%s\n",TempBuff);
             writeBytes=write(socketFD,"^",strlen("^"));
             if(writeBytes==-1){
@@ -32,7 +32,7 @@ void server_handler(int socketFD){
                 break;
             }
         }
-        else if(strchr(readBuffer,'$')!=NULL){
+        else if(strchr(readBuff,'$')!=NULL){
             //Server sent an error message and is closing it's connection
             strncpy(TempBuff,readBuff,strlen(readBuff)-2);
             printf("%s\n",TempBuff);
