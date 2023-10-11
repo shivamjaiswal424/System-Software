@@ -12,7 +12,7 @@
 #include <stdlib.h>  // Import for `atoi` function
 #define INITIAL_PROMPT "Welcome to IIITB College!\nWho are you?\n1. Admin\n2. Faculty\n3.Student\nPress any other number to exit\nEnter the number corresponding to the choice!"
 
-void clienthandler(int connectionFD){
+void client_handler(int connectionFD){
     printf("Client has connected to the server.\n");
 
     char readBuff[1000],writeBuff[1000];
@@ -90,6 +90,7 @@ void main(){
         else{
             if(fork()==0){
                 //some function for client
+                //client_handler(connectionFileDescriptor);
                 close(connectionFileDescriptor);
                 exit(0);
             }
