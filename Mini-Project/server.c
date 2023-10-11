@@ -10,6 +10,50 @@
 #include <string.h>  // Import for string functions
 #include <stdbool.h> // Import for `bool` data type
 #include <stdlib.h>  // Import for `atoi` function
+#define INITIAL_PROMPT "Welcome to IIITB College!\nWho are you?\n1. Admin\n2. Faculty\n3.Student\nPress any other number to exit\nEnter the number corresponding to the choice!"
+
+void clienthandler(int connectionFD){
+    printf("Client has connected to the server.\n");
+
+    char readBuff[1000],writeBuff[1000];
+    ssize_t readBytes,writeBytes;
+    int choice;
+    writeBytes=write(connectionFD,INITIAL_PROMPT,sizeof(INITIAL_PROMPT));
+    if(writeBytes==-1){
+        perror("Error while send the message to the User\n");
+    }
+    else{
+        bzero(readBuff,sizeof(readBuff));//clearing the buffer
+        readBytes=read(connectionFD,readBuff,sizeof(readBuff));
+        if(readBytes==-1){
+            perror("Error while reading from client.\n");
+        }
+        else if(readBytes==0){
+            printf("No data has been sent by the client.\n");
+        }
+        else{
+            choice=atoi(readBuff);
+            switch(choice){
+                case 1:
+                    //Admin
+                    //admin_function(connectionFD)
+                    break;
+                case 2:
+                    //Faculty
+                    //Faculty_function(connectionFD)
+                    break;
+                case 3:
+                    //Student
+                    //Student_function(connectionFD)
+                    break;
+                default:
+                    //Exit
+                    break;
+            }
+        }
+    }
+    printf("Terminating connection. \n");
+}
 
 void main(){
     int socketFileDescriptor,socketBind,socketListen,connectionFileDescriptor;
