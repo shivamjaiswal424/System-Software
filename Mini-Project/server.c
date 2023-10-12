@@ -65,24 +65,29 @@ void main(){
         exit(EXIT_FAILURE);
     }
     serverAddress.sin_family=AF_INET;
-    serverAddress.sin_port=htons(2000);
-    serverAddress.sin_addr.s_addr=INADDR_ANY; //look here once might be some error.
+    serverAddress.sin_port=htons(2004);
+    serverAddress.sin_addr.s_addr=htonl(INADDR_ANY); //look here once might be some error.
 
-    socketBind=bind(socketFileDescriptor,(struct sockaddr *)(&serverAddress),sizeof(serverAddress));
+    socketBind=bind(socketFileDescriptor,(struct sockaddr *)&serverAddress,sizeof(serverAddress));
     if(socketBind==-1){
         perror("Error while binding to server socket\n");
+        close(socketFileDescriptor);
         exit(EXIT_FAILURE);
     }
-    socketListen=listen(socketFileDescriptor,12);
+    socketListen=listen(socketFileDescriptor,10);
     if(socketListen==-1){
         perror("Error while listening for connections \n");
         close(socketFileDescriptor);
         exit(EXIT_FAILURE);
     }
+    else{
+        printf("Server is listening.\n");
+    }
+
     int clientSize;
     while(1){
         clientSize=(int)sizeof(clientAddress);
-        connectionFileDescriptor=accept(socketFileDescriptor,(struct sockaddr *)(&clientAddress),&clientSize);
+        connectionFileDescriptor=accept(socketFileDescriptor,(struct sockaddr *)&clientAddress,&clientSize);
         if(connectionFileDescriptor==-1){
             perror("Error while connecting to client!\n");
             close(socketFileDescriptor);
@@ -90,9 +95,9 @@ void main(){
         else{
             if(fork()==0){
                 //some function for client
-                //client_handler(connectionFileDescriptor);
+                client_handler(connectionFileDescriptor);
                 close(connectionFileDescriptor);
-                exit(0);
+                _exit(0);
             }
         }
     }

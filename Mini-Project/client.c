@@ -13,7 +13,7 @@ void server_handler(int socketFD){
     ssize_t readBytes,writeBytes;
     char TempBuff[1000];
     do{
-        bzero(readBuff,sizeof(readBuff));//Empth the read buffer
+        bzero(readBuff,sizeof(readBuff));//Empty the read buffer
         bzero(writeBuff,sizeof(writeBuff));
         readBytes=read(socketFD,readBuff,sizeof(readBuff));
         if(readBytes==-1){
@@ -34,7 +34,7 @@ void server_handler(int socketFD){
         }
         else if(strchr(readBuff,'$')!=NULL){
             //Server sent an error message and is closing it's connection
-            strncpy(TempBuff,readBuff,strlen(readBuff)-2);
+            strncpy(TempBuff,readBuff,strlen(readBuff)-1);//check once here
             printf("%s\n",TempBuff);
             printf("Closing the connection to the server now\n");
             break;
@@ -55,6 +55,7 @@ void server_handler(int socketFD){
             }
         }
     }while(readBytes>0);
+    close(socketFD);
 
 }
 
@@ -68,10 +69,10 @@ void main(){
         exit(EXIT_FAILURE);
     }
     client.sin_family=AF_INET;
-    client.sin_port=htons(2000);
-    client.sin_addr.s_addr=INADDR_ANY; //check here once
+    client.sin_port=htons(2004);
+    client.sin_addr.s_addr=htonl(INADDR_ANY); //check here once
 
-    connectStatus=connect(socketFileDescriptor,(struct sockaddr*)(&client),sizeof(client));
+    connectStatus=connect(socketFileDescriptor,(struct sockaddr *)&client,sizeof(client));
 
     if(connectStatus==-1){
         perror("Error while connecting to server!\n");
