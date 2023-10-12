@@ -10,6 +10,8 @@
 #include <string.h>  // Import for string functions
 #include <stdbool.h> // Import for `bool` data type
 #include <stdlib.h>  // Import for `atoi` function
+
+#include "./myfunctions/admin.h"
 #define INITIAL_PROMPT "Welcome to IIITB College!\nWho are you?\n1. Admin\n2. Faculty\n3.Student\nPress any other number to exit\nEnter the number corresponding to the choice!"
 
 void client_handler(int connectionFD){
@@ -18,7 +20,7 @@ void client_handler(int connectionFD){
     char readBuff[1000],writeBuff[1000];
     ssize_t readBytes,writeBytes;
     int choice;
-    writeBytes=write(connectionFD,INITIAL_PROMPT,sizeof(INITIAL_PROMPT));
+    writeBytes=write(connectionFD,INITIAL_PROMPT,strlen(INITIAL_PROMPT));
     if(writeBytes==-1){
         perror("Error while send the message to the User\n");
     }
@@ -36,7 +38,7 @@ void client_handler(int connectionFD){
             switch(choice){
                 case 1:
                     //Admin
-                    //admin_function(connectionFD)
+                    admin_handler(connectionFD);
                     break;
                 case 2:
                     //Faculty
@@ -53,6 +55,7 @@ void client_handler(int connectionFD){
         }
     }
     printf("Terminating connection. \n");
+    close(connectionFD);
 }
 
 void main(){
