@@ -43,6 +43,7 @@ bool admin_operation_handler(int connectionFD){
                     break;
                 case 4:
                     //update
+                    break;
                 default:
                     writeBytes=write(connectionFD,ADMIN_LOGOUT,strlen(ADMIN_LOGOUT));
                     return false;
