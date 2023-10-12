@@ -4,7 +4,7 @@
 
 //LOGIN
 #define LOGIN_ID "Enter your login ID"
-#define PASSWORD "Enter your password \n# "
+#define PASSWORD "Enter your password #\n "
 #define INVALID_LOGIN "The login ID specified doesn't exist!$"
 #define INVALID_PASSWORD "The password specified doesn't match!$"
 
@@ -26,5 +26,5 @@
 
 //UPDATE STUDENT
 
-#define ADMIN_LOGOUT "Logging out now! Thankyou."
+#define ADMIN_LOGOUT "Logging out now! Thankyou.$"
 #endif

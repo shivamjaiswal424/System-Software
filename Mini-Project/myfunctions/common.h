@@ -15,7 +15,7 @@
 #include "./admin-credentials.h"
 #include "./defines.h"
 
-bool login_handler(int who,int connFD,struct Student *ptrToStudentID,struct Faculty *ptrToFacultyID){
+bool login_handler(int who,int connFD,Student *ptrToStudentID,Faculty *ptrToFacultyID){
     ssize_t readBytes,writeBytes;
     char readBuff[1000],writeBuff[1000];
     char tempBuff[1000];
@@ -80,7 +80,12 @@ bool login_handler(int who,int connFD,struct Student *ptrToStudentID,struct Facu
         if(who==0){
             char *password=ADMIN_PASSWORD;
             char *hasspass=crypt(password,"somesalt");
-            if(strcmp(hashedPassword,password)==0) return true;
+            printf(ADMIN_PASSWORD);
+            printf("\n");
+            printf(hashedPassword);
+            printf("\n");
+            printf(hasspass);
+            if(strcmp(ADMIN_PASSWORD,readBuff)==0) return true;
         }
         else{
             //Some functions for Faculty and Student

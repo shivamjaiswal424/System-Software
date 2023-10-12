@@ -68,7 +68,7 @@ void main(){
         exit(EXIT_FAILURE);
     }
     serverAddress.sin_family=AF_INET;
-    serverAddress.sin_port=htons(2004);
+    serverAddress.sin_port=htons(2005);
     serverAddress.sin_addr.s_addr=htonl(INADDR_ANY); //look here once might be some error.
 
     socketBind=bind(socketFileDescriptor,(struct sockaddr *)&serverAddress,sizeof(serverAddress));

@@ -34,7 +34,7 @@ void server_handler(int socketFD){
         }
         else if(strchr(readBuff,'$')!=NULL){
             //Server sent an error message and is closing it's connection
-            strncpy(TempBuff,readBuff,strlen(readBuff)-1);//check once here
+            strncpy(TempBuff,readBuff,strlen(readBuff)-2);
             printf("%s\n",TempBuff);
             printf("Closing the connection to the server now\n");
             break;
@@ -42,7 +42,7 @@ void server_handler(int socketFD){
         else{
             bzero(writeBuff,sizeof(writeBuff));
             if(strchr(readBuff,'#')!=NULL){
-                strcpy(writeBuff,getpass(readBuff));
+                strcpy(writeBuff,getpass(readBuff)); 
             }
             else{
                 printf("%s\n",readBuff);
@@ -69,7 +69,7 @@ void main(){
         exit(EXIT_FAILURE);
     }
     client.sin_family=AF_INET;
-    client.sin_port=htons(2004);
+    client.sin_port=htons(2005);
     client.sin_addr.s_addr=htonl(INADDR_ANY); //check here once
 
     connectStatus=connect(socketFileDescriptor,(struct sockaddr *)&client,sizeof(client));
