@@ -100,7 +100,7 @@ void main(){
                 //some function for client
                 client_handler(connectionFileDescriptor);
                 close(connectionFileDescriptor);
-                _exit(0);
+                exit(0);
             }
         }
     }

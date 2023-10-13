@@ -8,8 +8,9 @@ typedef struct{
     int age;
     char email_id[50];
     bool active;
-    int courses;
+    int courses_ID[30];
     int stud_id;
+    int pass_modify;
 
 
 } Student;
@@ -21,8 +22,10 @@ typedef struct{
     char department[50];
     char email_id[50];
     bool active;
-    int courses;
+    int age;
+    int courses_ID[30];
     int faculty_id;
+    int pass_modify;
 } Faculty;
 
 typedef struct 
@@ -31,6 +34,7 @@ typedef struct
     char department[50];
     int totalseats;
     int availableseats;
+    int course_ID;
     
 } Course;
 

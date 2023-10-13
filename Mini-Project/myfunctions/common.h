@@ -80,12 +80,10 @@ bool login_handler(int who,int connFD,Student *ptrToStudentID,Faculty *ptrToFacu
         if(who==0){
             char *password=ADMIN_PASSWORD;
             char *hasspass=crypt(password,"somesalt");
-            printf(ADMIN_PASSWORD);
-            printf("\n");
-            printf(hashedPassword);
-            printf("\n");
-            printf(hasspass);
-            if(strcmp(ADMIN_PASSWORD,readBuff)==0) return true;
+            if(strcmp(ADMIN_PASSWORD,readBuff)==0) {
+                printf("TRUE\n");
+                return true;
+            }
         }
         else{
             //Some functions for Faculty and Student

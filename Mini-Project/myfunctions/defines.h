@@ -16,15 +16,24 @@
 #define ADMIN_LOGIN_SUCCESS "Welcome ADMIN!"
 
 //MENU
-#define ADMIN_MENU "1.Add Student\n2. Add Faculty\n3. Activate/Deactivate Student\n4. Update Student/Faculty details\n5. Press any other number to exit"
-
-
-
+#define ADMIN_MENU "1. Add Faculty\n2. Add Student\n3. Activate/Deactivate Student\n4. Update Student/Faculty details\n5. Press any other number to exit\n"
+#define ADD_DETAILS "Let's start with giving details.\n\n"
+#define USER_NAME "\nEnter the name of the user.\n"
+#define ENTER_PASSWORD "\nEnter user password.\n"
+#define ENTER_AGE "\nEnter User Age.\n"
+#define ENTER_EMAIL "\nEnter User Email ID\n"
+#define ADMIN_ADD_ID "The newly created user's ID is :"
 //ADD STUDENT
+
 
 //DELETE STUDENT
 
 //UPDATE STUDENT
 
 #define ADMIN_LOGOUT "Logging out now! Thankyou.$"
+
+#define STUDENT_FILE "./records/student.txt"
+#define FACULTY_FILE "./records/faculty.txt"
+#define COURSE_FILE "./records/course.txt"
+
 #endif
