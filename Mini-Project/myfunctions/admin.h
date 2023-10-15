@@ -46,10 +46,10 @@ bool admin_handler(int connectionFD){
                     //update
                     break;
                 case 5:
-                    //get student details
+                    get_student_details(connectionFD,NULL);
                     break;
                 case 6:
-                    //get faculty details
+                    get_faculty_details(connectionFD,NULL);
                     break;
                 default:
                     writeBytes=write(connectionFD,ADMIN_LOGOUT,strlen(ADMIN_LOGOUT));
@@ -66,17 +66,17 @@ bool admin_handler(int connectionFD){
 bool add_student(int connFD){
     ssize_t readBytes,writeBytes;
     char readBuff[1000],writeBuff[1000];
-    Student newStudent,prevStudent;
+    struct Student newStudent,prevStudent;
     int StudentFileDescriptor=open(STUDENT_FILE,O_RDONLY);
     if(StudentFileDescriptor==-1 && errno==ENOENT){
-        newStudent.stud_id=1;
+        newStudent.stud_id=0;
     }
     else if(StudentFileDescriptor==-1){
         perror("Error while opening the Student file\n");
         return false;
     }
     else{
-        int offset=lseek(StudentFileDescriptor,-sizeof(Student),SEEK_END);
+        int offset=lseek(StudentFileDescriptor,-sizeof(struct Student),SEEK_END);
         if(offset==-1){
             perror("Error seeking to last Student record");
             return false;
@@ -87,7 +87,7 @@ bool add_student(int connFD){
             perror("Error obtaining read lock on Student record");
             return false;
         }
-        readBytes=read(StudentFileDescriptor,&prevStudent,sizeof(Student));
+        readBytes=read(StudentFileDescriptor,&prevStudent,sizeof(struct Student));
         if(readBytes==-1){
             perror("Error while reading Student record from file!");
             return false;
@@ -101,6 +101,7 @@ bool add_student(int connFD){
     
     }
     newStudent.active=true;
+    memset(newStudent.courses_ID,-1,30*sizeof(int));
     bzero(writeBuff,sizeof(writeBuff));
     strcpy(writeBuff,ADD_DETAILS);
     strcat(writeBuff,"Enter Student Login ID\n");
@@ -181,13 +182,13 @@ bool add_student(int connFD){
         perror("Error while creating / opening Student File!");
         return false;
     }
-    writeBytes=write(StudentFileDescriptor,&newStudent,sizeof(Student));
+    writeBytes=write(StudentFileDescriptor,&newStudent,sizeof(struct Student));
     if(writeBytes==-1){
         perror("Error while adding Student to the record!");
         return false;
     }
     bzero(writeBuff,sizeof(writeBuff));
-    sprintf(writeBuff,"%s%d",ADMIN_ADD_ID,newStudent.stud_id);
+    sprintf(writeBuff,"%s%d",STUDENT_ADD_ID,newStudent.stud_id);
     strcat(writeBuff,"\nRedirecting you to the main menu...^");
     writeBytes=write(connFD,writeBuff,sizeof(writeBuff));
     readBytes = read(connFD, readBuff, sizeof(readBuff)); // Dummy read
@@ -198,20 +199,20 @@ bool add_student(int connFD){
 bool add_faculty(int connFD){
     ssize_t readBytes,writeBytes;
     char readBuff[1000],writeBuff[1000];
-    Faculty newFaculty,prevFaculty;
+    struct Faculty newFaculty,prevFaculty;
     
     int FacultyFileDescriptor=open(FACULTY_FILE,O_RDONLY);
     if(FacultyFileDescriptor==-1 && errno==ENOENT){
-        newFaculty.faculty_id=1;
+        newFaculty.faculty_id=0;
     }
     else if(FacultyFileDescriptor==-1){
         perror("Error while opening the Faculty file\n");
         return false;
     }
     else{
-        int offset=lseek(FacultyFileDescriptor,-sizeof(Faculty),SEEK_END);
+        int offset=lseek(FacultyFileDescriptor,-sizeof(struct Faculty),SEEK_END);
         if(offset==-1){
-            perror("Error seeking to last Student record");
+            perror("Error seeking to last Faculty record");
             return false;
         }
         struct flock lock={F_RDLCK,SEEK_SET,offset,sizeof(newFaculty),getpid()};
@@ -220,7 +221,7 @@ bool add_faculty(int connFD){
             perror("Error obtaining read lock on Faculty record");
             return false;
         }
-        readBytes=read(FacultyFileDescriptor,&prevFaculty,sizeof(Faculty));
+        readBytes=read(FacultyFileDescriptor,&prevFaculty,sizeof(struct Faculty));
         if(readBytes==-1){
             perror("Error while reading Faculty record from file!");
             return false;
@@ -234,6 +235,7 @@ bool add_faculty(int connFD){
     
     }
     newFaculty.active=true;
+    memset(newFaculty.courses_ID,-1,30*sizeof(int));
     bzero(writeBuff,sizeof(writeBuff));
     strcpy(writeBuff,ADD_DETAILS);
     strcat(writeBuff,"Enter Faculty Login ID\n");
@@ -314,13 +316,13 @@ bool add_faculty(int connFD){
         perror("Error while creating / opening faculty File!");
         return false;
     }
-    writeBytes=write(FacultyFileDescriptor,&newFaculty,sizeof(Faculty));
+    writeBytes=write(FacultyFileDescriptor,&newFaculty,sizeof(struct Faculty));
     if(writeBytes==-1){
         perror("Error while adding Faculty to the record!");
         return false;
     }
     bzero(writeBuff,sizeof(writeBuff));
-    sprintf(writeBuff,"%s%d",ADMIN_ADD_ID,newFaculty.faculty_id);
+    sprintf(writeBuff,"%s%d",FACULTY_ADD_ID,newFaculty.faculty_id);
     strcat(writeBuff,"\nRedirecting you to the main menu...^");
     writeBytes=write(connFD,writeBuff,sizeof(writeBuff));
     readBytes = read(connFD, readBuff, sizeof(readBuff)); // Dummy read

@@ -24,7 +24,7 @@ void server_handler(int socketFD){
         }
         else if(strchr(readBuff,'^')!=NULL){
             //skip read from client
-            strncpy(TempBuff,readBuff,strlen(readBuff)-1);
+            strncpy(TempBuff,readBuff,strlen(readBuff)-2);
             printf("%s\n",TempBuff);
             writeBytes=write(socketFD,"^",strlen("^"));
             if(writeBytes==-1){

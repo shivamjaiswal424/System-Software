@@ -12,7 +12,7 @@
 #include <stdlib.h>  // Import for `atoi` function
 
 #include "./myfunctions/admin.h"
-#define INITIAL_PROMPT "Welcome to IIITB College!\nWho are you?\n1. Admin\n2. Faculty\n3.Student\nPress any other number to exit\nEnter the number corresponding to the choice!"
+#define INITIAL_PROMPT "Welcome to IIITB College!\nWho are you?\n1. Admin\n2. Faculty\n3. Student\nPress any other number to exit\nEnter the number corresponding to the choice!"
 
 void client_handler(int connectionFD){
     printf("Client has connected to the server.\n");

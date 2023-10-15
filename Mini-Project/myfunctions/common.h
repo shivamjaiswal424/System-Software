@@ -15,12 +15,12 @@
 #include "./admin-credentials.h"
 #include "./defines.h"
 
-bool login_handler(int who,int connFD,Student *ptrToStudentID,Faculty *ptrToFacultyID){
+bool login_handler(int who,int connFD,struct Student *ptrToStudentID,struct Faculty *ptrToFacultyID){
     ssize_t readBytes,writeBytes;
     char readBuff[1000],writeBuff[1000];
     char tempBuff[1000];
-    Student student;
-    Faculty faculty;
+    struct Student student;
+    struct Faculty faculty;
 
     int ID;
     bzero(readBuff,sizeof(readBuff));
@@ -102,5 +102,185 @@ bool login_handler(int who,int connFD,Student *ptrToStudentID,Faculty *ptrToFacu
 
 }
 
+bool get_student_details(int connFD, struct Student *ptrToStudent){
+    ssize_t readBytes,writeBytes;
+    char readBuff[1000],writeBuff[1000];
+    char tempBuff[1000];
 
+    int studentID;
+    struct Student student;
+    int StudentFileDescriptor;
+    struct flock lock={F_RDLCK,SEEK_SET,0,sizeof(struct Student),getpid()};
+
+    if(ptrToStudent==NULL){
+        writeBytes=write(connFD,GET_STUDENT_ID,strlen(GET_STUDENT_ID));
+        if(writeBytes==-1){
+            perror("Error  writing GET_STUDENT_ID message to user!");
+            return false;
+        }
+        bzero(readBuff,sizeof(readBuff));
+        readBytes=read(connFD,readBuff,sizeof(readBuff));
+        if(readBytes==-1){
+            perror("Error reading account number response from user!");
+            return false;
+        }
+        studentID=atoi(readBuff);
+    }
+    StudentFileDescriptor=open(STUDENT_FILE,O_RDONLY);
+
+    if(StudentFileDescriptor==-1){
+        bzero(writeBuff,sizeof(writeBuff));
+        strcpy(writeBuff,NO_STUDENT_ID);
+        strcat(writeBuff,"^");
+        perror("Error while opening student file to get student details!");
+        writeBytes=write(connFD,writeBuff,strlen(writeBuff));
+        if(writeBytes==-1){
+            perror("Error while writing NO_STUDENT_ID message to the user.\n");
+            return false;
+        }
+        readBytes=read(connFD,readBuff,sizeof(readBuff));
+        return false;
+    }
+    int offset=lseek(StudentFileDescriptor,(studentID)*sizeof(struct Student),SEEK_SET); //0-indexing
+    if(errno==EINVAL){
+        //Student doesn't exist
+        bzero(writeBuff,sizeof(writeBuff));
+        strcpy(writeBuff,NO_STUDENT_ID);
+        strcat(writeBuff,"^");
+        perror("Error seeking to Student record to get Student details!");
+        writeBytes=write(connFD,writeBuff,strlen(writeBuff));
+        if(writeBytes==-1){
+            perror("Error while writing NO_STUDENT_ID message to the user");
+            return false;
+        }
+        readBytes=read(connFD,readBuff,sizeof(readBuff));//Dummy read for "^".
+        return false;
+    }
+    else if(offset==-1){
+        perror("Error seeking to Student record to get Student details!");
+        return false;
+    }
+    lock.l_start=offset;
+    int lockingStatus=fcntl(StudentFileDescriptor,F_SETLKW,&lock);
+    if(lockingStatus==-1){
+        perror("Error obtaining read lock on Student record");
+        return false;
+    }
+    readBytes=read(StudentFileDescriptor,&student,sizeof(struct Student));
+    if(readBytes==-1){
+        perror("Error reading Student record from the file!");
+        return false;
+    }
+    lock.l_type=F_UNLCK;
+    fcntl(StudentFileDescriptor,F_SETLK,&lock);
+
+    if(ptrToStudent!=NULL){
+        *ptrToStudent=student;
+        return true;
+    }
+    bzero(writeBuff,sizeof(writeBuff));
+    sprintf(writeBuff, "Student Details- \nStudent Name: %s\nStudent Age: %d\nStudent Login ID: %s\nStudent status: %s\nStudent Email ID: %s\nStudent ID: %d\n",student.name,student.age,student.login_id, (student.active? "Active" : "Deactive"),student.email_id,(student.stud_id));
+    if(student.active){
+        //show the courses ,student has taken
+    }
+    strcat(writeBuff,"\nRedirecting you to the main menu ...^");
+    writeBytes=write(connFD,writeBuff,strlen(writeBuff));
+    if(writeBytes==-1){
+        perror("Error while giving info to user");
+        return false;
+    }
+    readBytes=read(connFD,readBuff,sizeof(readBuff));
+    return true;
+}
+
+bool get_faculty_details(int connFD, struct Faculty *ptrTofaculty){
+    ssize_t readBytes,writeBytes;
+    char readBuff[1000],writeBuff[1000];
+    char tempBuff[1000];
+
+    int facultyID;
+    struct Faculty faculty;
+    int FacultyFileDescriptor;
+    struct flock lock={F_RDLCK,SEEK_SET,0,sizeof(struct Faculty),getpid()};
+
+    if(ptrTofaculty==NULL){
+        writeBytes=write(connFD,GET_FACULTY_ID,strlen(GET_FACULTY_ID));
+        if(writeBytes==-1){
+            perror("Error  writing GET_FACULTY_ID message to user!");
+            return false;
+        }
+        bzero(readBuff,sizeof(readBuff));
+        readBytes=read(connFD,readBuff,sizeof(readBuff));
+        if(readBytes==-1){
+            perror("Error reading account number response from user!");
+            return false;
+        }
+        facultyID=atoi(readBuff);
+    }
+    FacultyFileDescriptor=open(FACULTY_FILE,O_RDONLY);
+
+    if(FacultyFileDescriptor==-1){
+        bzero(writeBuff,sizeof(writeBuff));
+        strcpy(writeBuff,NO_FACULTY_ID);
+        strcat(writeBuff,"^");
+        perror("Error while opening faculty file to get faculty details!");
+        writeBytes=write(connFD,writeBuff,strlen(writeBuff));
+        if(writeBytes==-1){
+            perror("Error while writing NO_FACULTY_ID message to the user.\n");
+            return false;
+        }
+        readBytes=read(connFD,readBuff,sizeof(readBuff));
+        return false;
+    }
+    int offset=lseek(FacultyFileDescriptor,(facultyID)*sizeof(struct Faculty),SEEK_SET); //0-indexing
+    if(errno==EINVAL){
+        //Student doesn't exist
+        bzero(writeBuff,sizeof(writeBuff));
+        strcpy(writeBuff,NO_FACULTY_ID);
+        strcat(writeBuff,"^");
+        perror("Error seeking to faculty record to get faculty details!");
+        writeBytes=write(connFD,writeBuff,strlen(writeBuff));
+        if(writeBytes==-1){
+            perror("Error while writing NO_FACULTY_ID message to the user");
+            return false;
+        }
+        readBytes=read(connFD,readBuff,sizeof(readBuff));//Dummy read for "^".
+        return false;
+    }
+    else if(offset==-1){
+        perror("Error seeking to Faculty record to get Faculty details!");
+        return false;
+    }
+    lock.l_start=offset;
+    int lockingStatus=fcntl(FacultyFileDescriptor,F_SETLKW,&lock);
+    if(lockingStatus==-1){
+        perror("Error obtaining read lock on Faculty record");
+        return false;
+    }
+    readBytes=read(FacultyFileDescriptor,&faculty,sizeof(struct Faculty));
+    if(readBytes==-1){
+        perror("Error reading Faculty record from the file!");
+        return false;
+    }
+    lock.l_type=F_UNLCK;
+    fcntl(FacultyFileDescriptor,F_SETLK,&lock);
+
+    if(ptrTofaculty!=NULL){
+        *ptrTofaculty=faculty;
+        return true;
+    }
+    bzero(writeBuff,sizeof(writeBuff));
+    sprintf(writeBuff, "Faculty Details- \nFaculty Name: %s\nFacultyAge: %d\nFaculty Login ID: %s\nFaculty status: %s\nFacultyEmail ID: %s\nFaculty ID: %d\n",faculty.name,faculty.age,faculty.login_id, (faculty.active? "Active" : "Deactive"),faculty.email_id,(faculty.faculty_id));
+    if(faculty.active){
+        //show the courses ,
+    }
+    strcat(writeBuff,"\n Redirecting you to the main menu ...^");
+    writeBytes=write(connFD,writeBuff,strlen(writeBuff));
+    if(writeBytes==-1){
+        perror("Error while giving info to user");
+        return false;
+    }
+    readBytes=read(connFD,readBuff,sizeof(readBuff));
+    return true;
+}
 #endif
