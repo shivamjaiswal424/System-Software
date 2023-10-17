@@ -34,6 +34,7 @@ struct Course {
     int totalseats;
     int availableseats;
     int course_ID;
+    bool active;
     
 };
 

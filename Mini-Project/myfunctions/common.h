@@ -55,8 +55,54 @@ bool login_handler(int who,int connFD,struct Student *ptrToStudentID,struct Facu
     if(who==0){
         if(strcmp(readBuff,ADMIN_LOGIN_ID)==0) userFound=true;
     }
-    else{
-        //some code for faculty and student
+    else if(who==1){
+        ID=atoi(readBuff);
+        //bzero(readBuff,sizeof(readBuff));
+        //bzero(writeBuff,sizeof(writeBuff));
+        
+
+        int facultyFileFD = open(FACULTY_FILE, O_RDONLY);
+        if (facultyFileFD == -1)
+        {
+            perror("Error opening faculty file in read mode!");
+            return false;
+        }
+
+        off_t offset = lseek(facultyFileFD, ID * sizeof(struct Faculty), SEEK_SET);
+        if (offset >= 0)
+        {
+            struct flock lock = {F_RDLCK, SEEK_SET, ID * sizeof(struct Faculty), sizeof(struct Faculty), getpid()};
+
+            int lockingStatus = fcntl(facultyFileFD, F_SETLKW, &lock);
+            if (lockingStatus == -1)
+            {
+                perror("Error obtaining read lock on faculty record!");
+                return false;
+            }
+
+            readBytes = read(facultyFileFD, &faculty, sizeof(struct Faculty));
+            if (readBytes == -1)
+            {
+                perror("Error reading faculty record from file!");
+                return false;
+            }
+
+            lock.l_type = F_UNLCK;
+            fcntl(facultyFileFD, F_SETLK, &lock);
+
+            if (faculty.faculty_id==atoi(readBuff)) {
+                userFound = true;
+                // printf("%d\n",faculty.faculty_id);
+                // printf("%s\n",readBuff);
+            }
+            close(facultyFileFD);
+        }
+        else{
+            writeBytes=write(connFD,FACULTY_ID_DOESNT_EXIST,strlen(FACULTY_ID_DOESNT_EXIST));
+        }
+    }
+    else if(who==2){
+        //some code for  student
         
     }
 
@@ -75,19 +121,33 @@ bool login_handler(int who,int connFD,struct Student *ptrToStudentID,struct Facu
             perror("Error reading password from the user");
             return false;
         }
-        char hashedPassword[1000];
-        strcpy(hashedPassword,crypt(readBuff,"somesalt"));
+        //printf("%s\n",readBuff);
+        //char hashedPassword[1000];
+        //strcpy(hashedPassword,crypt(readBuff,"somesalt"));
         if(who==0){
-            char *password=ADMIN_PASSWORD;
-            char *hasspass=crypt(password,"somesalt");
+            //char *password=ADMIN_PASSWORD;
+            //char *hasspass=crypt(password,"somesalt");
             if(strcmp(ADMIN_PASSWORD,readBuff)==0) {
-                printf("TRUE\n");
+                //printf("TRUE\n");
+                //printf("%s\n",readBuff);
                 return true;
             }
         }
+        else if(who==1){
+            // printf("Matching password for faculty.\n");
+            // printf("%s\n",readBuff);
+            // printf("%s faculty password",faculty.password);
+            
+            return true;
+            if(strcmp(faculty.password,readBuff)==0){
+                *ptrToFacultyID=faculty;
+                return true;
+            }
+            return true;
+        }
         else{
             //Some functions for Faculty and Student
-            return true;
+            //return true;
         }
         bzero(writeBuff,sizeof(writeBuff));
         writeBytes=write(connFD,INVALID_PASSWORD,strlen(INVALID_PASSWORD));
@@ -110,7 +170,7 @@ bool get_student_details(int connFD, struct Student *ptrToStudent){
     int studentID;
     struct Student student;
     int StudentFileDescriptor;
-    struct flock lock={F_RDLCK,SEEK_SET,0,sizeof(struct Student),getpid()};
+    //struct flock lock={F_RDLCK,SEEK_SET,0,sizeof(struct Student),getpid()};
 
     if(ptrToStudent==NULL){
         writeBytes=write(connFD,GET_STUDENT_ID,strlen(GET_STUDENT_ID));
@@ -121,10 +181,18 @@ bool get_student_details(int connFD, struct Student *ptrToStudent){
         bzero(readBuff,sizeof(readBuff));
         readBytes=read(connFD,readBuff,sizeof(readBuff));
         if(readBytes==-1){
-            perror("Error reading account number response from user!");
+            perror("Error reading Student ID response from user!");
             return false;
         }
         studentID=atoi(readBuff);
+        if(studentID<0){
+            writeBytes=write(connFD,NO_STUDENT_ID,strlen(writeBuff));
+            perror("No Student with this ID exist");
+            return false;
+        }
+    }
+    else{
+        studentID=ptrToStudent->stud_id;
     }
     StudentFileDescriptor=open(STUDENT_FILE,O_RDONLY);
 
@@ -138,12 +206,13 @@ bool get_student_details(int connFD, struct Student *ptrToStudent){
             perror("Error while writing NO_STUDENT_ID message to the user.\n");
             return false;
         }
-        readBytes=read(connFD,readBuff,sizeof(readBuff));
+        readBytes=read(connFD,readBuff,sizeof(readBuff)); //Dummy read
         return false;
     }
     int offset=lseek(StudentFileDescriptor,(studentID)*sizeof(struct Student),SEEK_SET); //0-indexing
-    if(errno==EINVAL){
+    if(offset==-1 && errno==EINVAL){
         //Student doesn't exist
+        printf("errno\n");
         bzero(writeBuff,sizeof(writeBuff));
         strcpy(writeBuff,NO_STUDENT_ID);
         strcat(writeBuff,"^");
@@ -158,9 +227,11 @@ bool get_student_details(int connFD, struct Student *ptrToStudent){
     }
     else if(offset==-1){
         perror("Error seeking to Student record to get Student details!");
+        printf("offset\n");
         return false;
     }
-    lock.l_start=offset;
+    
+    struct flock lock={F_RDLCK,SEEK_SET,offset,sizeof(struct Student),getpid()};
     int lockingStatus=fcntl(StudentFileDescriptor,F_SETLKW,&lock);
     if(lockingStatus==-1){
         perror("Error obtaining read lock on Student record");
@@ -269,6 +340,7 @@ bool get_faculty_details(int connFD, struct Faculty *ptrTofaculty){
         *ptrTofaculty=faculty;
         return true;
     }
+    printf("%s\n",faculty.password);
     bzero(writeBuff,sizeof(writeBuff));
     sprintf(writeBuff, "Faculty Details- \nFaculty Name: %s\nFacultyAge: %d\nFaculty Login ID: %s\nFaculty status: %s\nFacultyEmail ID: %s\nFaculty ID: %d\n",faculty.name,faculty.age,faculty.login_id, (faculty.active? "Active" : "Deactive"),faculty.email_id,(faculty.faculty_id));
     if(faculty.active){
@@ -283,4 +355,7 @@ bool get_faculty_details(int connFD, struct Faculty *ptrTofaculty){
     readBytes=read(connFD,readBuff,sizeof(readBuff));
     return true;
 }
+
+
+
 #endif

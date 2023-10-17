@@ -12,6 +12,7 @@
 #include <stdlib.h>  // Import for `atoi` function
 
 #include "./myfunctions/admin.h"
+#include "./myfunctions/faculty.h"
 #define INITIAL_PROMPT "Welcome to IIITB College!\nWho are you?\n1. Admin\n2. Faculty\n3. Student\nPress any other number to exit\nEnter the number corresponding to the choice!"
 
 void client_handler(int connectionFD){
@@ -42,7 +43,7 @@ void client_handler(int connectionFD){
                     break;
                 case 2:
                     //Faculty
-                    //Faculty_function(connectionFD)
+                    faculty_handler(connectionFD);
                     break;
                 case 3:
                     //Student

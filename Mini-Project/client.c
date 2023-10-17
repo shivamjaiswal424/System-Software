@@ -18,9 +18,11 @@ void server_handler(int socketFD){
         readBytes=read(socketFD,readBuff,sizeof(readBuff));
         if(readBytes==-1){
             perror("Error while reading from server!\n");
+            break;
         }
         else if(readBytes==0){
             printf("Closing the connection now.\n");
+            break;
         }
         else if(strchr(readBuff,'^')!=NULL){
             //skip read from client
@@ -34,7 +36,7 @@ void server_handler(int socketFD){
         }
         else if(strchr(readBuff,'$')!=NULL){
             //Server sent an error message and is closing it's connection
-            strncpy(TempBuff,readBuff,strlen(readBuff)-2);
+            strncpy(TempBuff,readBuff,strlen(readBuff)-1);
             printf("%s\n",TempBuff);
             printf("Closing the connection to the server now\n");
             break;
