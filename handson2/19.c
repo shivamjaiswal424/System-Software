@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 int main(){
 	int i=mkfifo("myfifo_by_mkfifo",0766);
 	if(i==-1){

@@ -24,8 +24,8 @@ int main(){
 		
 	}
 	else{
-		close(fd1[1]);
-		close(fd2[0]);
+		close(fd1[1]);//close the write end for the parent
+		close(fd2[0]);//close the read end for the parent
 		read(fd1[0],buff1,sizeof(buff1));
 		printf("Message form child read by parent: %s\n",buff1);
 		printf("Message to  child to be sent by parent: ");

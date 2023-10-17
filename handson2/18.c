@@ -12,8 +12,8 @@ int main(){
 	//wrting ouput of ls -l to pipe 1 write-end=STDOUT
 	if(fork()==0){
 		dup2(fd1[1],1);//write-end of pipe1 =new STDOUT
-		close(fd1[0]);
-		close(fd2[0]);
+		close(fd1[0]); // Close read-end of pipe 1
+		close(fd2[0]);// Close both ends of pipe 2
 		close(fd2[1]);
 		execlp("ls","ls","-l",NULL);
 

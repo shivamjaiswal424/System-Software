@@ -21,7 +21,7 @@ int main(){
 
 	}
 	else{
-		close(fd[1]);
+		close(fd[1]);//close the write end for child
 		read(fd[0],buff,sizeof(buff));
 		printf("Message from parent: %s\n",buff);
 	}
