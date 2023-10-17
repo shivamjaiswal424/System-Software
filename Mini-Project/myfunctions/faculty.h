@@ -8,14 +8,20 @@ struct Faculty loggedInFaculty;
 int semIdentifier;
 
 //Functions
+bool faculty_handler(int connFD);
+bool lock_critical_section(struct sembuf *semOp);
+bool unlock_critical_section(struct sembuf *sem_op);
+
+
 bool faculty_handler(int connFD){
-    if(login_handler(1,connFD,NULL,NULL)){
+    if(login_handler(1,connFD,NULL,&loggedInFaculty)){
         ssize_t writeBytes, readBytes;            // Number of bytes read from / written to the client
         char readBuffer[1000], writeBuffer[1000]; // A buffer used for reading & writing to the client
 
         // Get a semaphore for the user
-        key_t semKey = ftok(FACULTY_FILE, loggedInFaculty.faculty_id); // Generate a key based on the account number hence, different customers will have different semaphores
-
+        key_t semKey = ftok(FACULTY_FILE, loggedInFaculty.faculty_id); // Generate a key based on the faculty ID hence, different faculty will have different semaphores
+        printf("%d faculty id\n",loggedInFaculty.faculty_id);
+        
         union semun
         {
             int val; // Value of the semaphore
@@ -92,5 +98,34 @@ bool faculty_handler(int connFD){
     return true;
 }
 
+bool lock_critical_section(struct sembuf *semOp)
+{
+    semOp->sem_flg = SEM_UNDO;
+    semOp->sem_op = -1;
+    semOp->sem_num = 0;
+    int semopStatus = semop(semIdentifier, semOp, 1);
+    if (semopStatus == -1)
+    {
+        perror("Error while locking critical section");
+        return false;
+    }
+    return true;
+}
+
+bool unlock_critical_section(struct sembuf *semOp)
+{
+    semOp->sem_op = 1;
+    int semopStatus = semop(semIdentifier, semOp, 1);
+    if (semopStatus == -1)
+    {
+        perror("Error while operating on semaphore!");
+        _exit(1);
+    }
+    return true;
+}
+
+// bool add_courses(int connFD){
+
+// }
 
 #endif

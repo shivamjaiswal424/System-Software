@@ -1,3 +1,8 @@
+// Name : 29.c
+// Author : Shivam Jaiswal
+// Description :Write a program to remove the message queue
+
+
 #include <stdio.h>
 #include <stdio.h>
 #include <stdlib.h>

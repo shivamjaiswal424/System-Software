@@ -1,3 +1,8 @@
+// Name : 21_a.c
+// Author : Shivam Jaiswal
+// Description :Write two programs so that both can communicate by FIFO -Use two way communications.
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>

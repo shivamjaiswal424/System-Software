@@ -92,8 +92,7 @@ bool login_handler(int who,int connFD,struct Student *ptrToStudentID,struct Facu
 
             if (faculty.faculty_id==atoi(readBuff)) {
                 userFound = true;
-                // printf("%d\n",faculty.faculty_id);
-                // printf("%s\n",readBuff);
+                
             }
             close(facultyFileFD);
         }
@@ -121,24 +120,23 @@ bool login_handler(int who,int connFD,struct Student *ptrToStudentID,struct Facu
             perror("Error reading password from the user");
             return false;
         }
-        //printf("%s\n",readBuff);
-        //char hashedPassword[1000];
-        //strcpy(hashedPassword,crypt(readBuff,"somesalt"));
+        
         if(who==0){
-            //char *password=ADMIN_PASSWORD;
-            //char *hasspass=crypt(password,"somesalt");
+            
             if(strcmp(ADMIN_PASSWORD,readBuff)==0) {
-                //printf("TRUE\n");
-                //printf("%s\n",readBuff);
+                
                 return true;
             }
         }
         else if(who==1){
-            // printf("Matching password for faculty.\n");
-            // printf("%s\n",readBuff);
-            // printf("%s faculty password",faculty.password);
+            
             
             return true;
+            *ptrToFacultyID=faculty;
+            printf("%d ptrToFacultyID",ptrToFacultyID->faculty_id);
+            printf("%d facultyID",faculty.faculty_id);
+            
+            
             if(strcmp(faculty.password,readBuff)==0){
                 *ptrToFacultyID=faculty;
                 return true;
@@ -340,7 +338,7 @@ bool get_faculty_details(int connFD, struct Faculty *ptrTofaculty){
         *ptrTofaculty=faculty;
         return true;
     }
-    printf("%s\n",faculty.password);
+    
     bzero(writeBuff,sizeof(writeBuff));
     sprintf(writeBuff, "Faculty Details- \nFaculty Name: %s\nFacultyAge: %d\nFaculty Login ID: %s\nFaculty status: %s\nFacultyEmail ID: %s\nFaculty ID: %d\n",faculty.name,faculty.age,faculty.login_id, (faculty.active? "Active" : "Deactive"),faculty.email_id,(faculty.faculty_id));
     if(faculty.active){

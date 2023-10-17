@@ -1,3 +1,8 @@
+// Name : 33server.c
+// Author : Shivam Jaiswal
+// Description :Write a program to communicate between two machines using socket.
+
+
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>  // Import for `socket`, `bind`, `listen`, `accept`

@@ -1,3 +1,7 @@
+// Name : 15.c
+// Author : Shivam Jaiswal
+// Description : Write a simple program to send some data from parent to the child process.
+
 #include <stdio.h>
 #include <stdlib.h>
 

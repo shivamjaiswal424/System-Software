@@ -1,3 +1,9 @@
+// Name : 33.c
+// Author : Shivam Jaiswal
+// Description :Write a program to communicate between two machines using socket.
+
+
+
 #include <sys/types.h>  // Import for `socket`, `connect`
 #include <sys/socket.h> // Import for `socket`, `connect`
 #include <netinet/ip.h> // Import for `struct sockaddr_in`, `htons`

@@ -1,3 +1,10 @@
+// Name : 31.c
+// Author : Shivam Jaiswal
+// Description :Write a program to create a semaphore and initialize value to the semaphore.
+//  a. create a binary semaphore
+//  b. create a counting semaphore
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>

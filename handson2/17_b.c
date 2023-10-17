@@ -1,3 +1,9 @@
+// Name : 17_b.c
+// Author : Shivam Jaiswal
+// Description :  Write a program to execute ls -l | wc.
+ //b. use dup2
+ 
+
 #include <stdio.h>
 #include <stdlib.h>
 

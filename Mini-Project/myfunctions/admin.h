@@ -69,6 +69,9 @@ bool add_student(int connFD){
     ssize_t readBytes,writeBytes;
     char readBuff[1000],writeBuff[1000];
     struct Student newStudent,prevStudent;
+    memset(&newStudent,0,sizeof(struct Student));
+    memset(&prevStudent,0,sizeof(struct Student));
+
     int StudentFileDescriptor=open(STUDENT_FILE,O_RDONLY);
     if(StudentFileDescriptor==-1 && errno==ENOENT){
         newStudent.stud_id=0;
@@ -204,6 +207,8 @@ bool add_faculty(int connFD){
     struct Faculty newFaculty,prevFaculty;
     
     int FacultyFileDescriptor=open(FACULTY_FILE,O_RDONLY);
+    memset(&newFaculty,0,sizeof(struct Faculty));
+    memset(&prevFaculty,0,sizeof(struct Faculty));
     if(FacultyFileDescriptor==-1 && errno==ENOENT){
         newFaculty.faculty_id=0;
     }
