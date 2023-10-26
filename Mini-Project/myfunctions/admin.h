@@ -338,6 +338,7 @@ bool add_faculty(int connFD){
     writeBytes=write(connFD,writeBuff,sizeof(writeBuff));
     readBytes = read(connFD, readBuff, sizeof(readBuff)); // Dummy read
     bzero(readBuff,sizeof(readBuff));
+    bzero(writeBuff,sizeof(writeBuff));
     close(FacultyFileDescriptor);
     return true;
 }

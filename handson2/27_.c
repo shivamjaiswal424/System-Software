@@ -43,7 +43,7 @@ int main() {
 
     // Receive messages from the queue with flag 0
     while (1) {
-        if (msgrcv(msgid, &msg, sizeof(msg.msg_text), 1, 0) == -1) {
+        if (msgrcv(msgid, &msg, sizeof(msg.msg_text), 1, 0) == -1) { //The message type (positive integer) to receive. In this case, it's set to 1.
             perror("msgrcv");
             exit(1);
         }

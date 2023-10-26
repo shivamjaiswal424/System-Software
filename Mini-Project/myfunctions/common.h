@@ -346,11 +346,13 @@ bool get_faculty_details(int connFD, struct Faculty *ptrTofaculty){
     }
     strcat(writeBuff,"\n Redirecting you to the main menu ...^");
     writeBytes=write(connFD,writeBuff,strlen(writeBuff));
+    bzero(writeBuff,sizeof(writeBuff));
     if(writeBytes==-1){
         perror("Error while giving info to user");
         return false;
     }
     readBytes=read(connFD,readBuff,sizeof(readBuff));
+    bzero(readBuff,sizeof(readBuff));
     return true;
 }
 

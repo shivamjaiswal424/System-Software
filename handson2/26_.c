@@ -45,7 +45,7 @@ int main() {
         msg.msg_type = 1; // Message type can be any positive integer
 
         // Send the message to the queue
-        if (msgsnd(msgid, &msg, sizeof(msg.msg_text), 0) == -1) {
+        if (msgsnd(msgid, &msg, sizeof(msg.msg_text), 0) == -1) {//0 indicates no special flag
             perror("msgsnd");
             exit(1);
         }

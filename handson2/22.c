@@ -11,13 +11,13 @@
 #include <sys/select.h>
 
 int main(){
-	fd_set rfds;
+	fd_set rfds;//A set of file descriptors to be monitored by select.
 	struct timeval tv;
 	tv.tv_sec=5;
 	tv.tv_usec=0;
 	int fd=open("myfifo",O_RDONLY);
 	char buff[100];
-	FD_ZERO(&rfds);
+	FD_ZERO(&rfds);//Clears the file descriptor set rfds.
 
 	FD_SET(fd,&rfds);
 	if(select(fd+1,&rfds,NULL,NULL,&tv)==-1){

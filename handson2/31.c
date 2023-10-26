@@ -41,11 +41,7 @@ int main(){
 		*a=i;
 		pthread_create(&thread1[i],NULL,binarySemaphorefunction,a);
 	}
-	/*for(int i=0;i<6;i++){
-                int* b=malloc(sizeof(int));
-                b=i;
-                pthread_create(&thread2[i],NULL,countingSemaphorefunction,b);
-        }*/
+
 	for(int i=0;i<5;i++){
 		pthread_join(thread1[i],NULL);
 	}

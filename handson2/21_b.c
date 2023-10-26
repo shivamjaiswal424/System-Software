@@ -19,10 +19,5 @@ int main(){
 	printf("Enter the text: \n");
 	scanf("%[^n]",buff2);
 	write(fd2,buff2,sizeof(buff2));
-	/*
-	while(1){
-		fgets(buff2,sizeof(buff2),stdin);
-		if(strcmp(buff2,"exit\n")==0) break;
-		write(fd1,buff2,sizeof(buff2));
-	}*/
+	
 }
